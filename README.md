@@ -2,6 +2,7 @@
 
 This is my first c++ project with OpenGl. Useful resources for learning OpenGl:
 
+- [LearnOpengl.com book on opengl](https://learnopengl.com/book/book_pdf.pdf)
 - freeCodeCamp.org's OpenGl course by [VictorGordan](https://github.com/VictorGordan) - https://www.youtube.com/watch?v=45MIykWJ-C4
 - [TheCherno](https://youtube.com/c/TheChernoProject) OpenGl series on youtube - https://www.youtube.com/playlist?list=PLlrATfBNZ98foTJPJ_Ev03o2oq3-GGOS2
 - [OpenGl docs](https://docs.gl)

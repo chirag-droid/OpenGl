@@ -13,7 +13,7 @@ env:
 jobs:
   build:
     runs-on: ${{ matrix.os }}
-    name: ${{ runner.os }}
+    name: ${{ matrix.os }}
     strategy:
       matrix:
         os: [linux-latest, windows-latest, macos-latest]

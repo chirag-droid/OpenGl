@@ -3,6 +3,7 @@
 #include <glad/glad.h>
 #include <GLFW/glfw3.h>
 #include "Shader.h"
+#include "VertexBuffer.h"
 
 // Window dimensions
 const unsigned int WIDTH = 800, HEIGHT = 600;
@@ -56,16 +57,14 @@ int main()
         5, 4, 1
     };
 
-    unsigned int VAO, VBO, EBO;
+    unsigned int VAO, EBO;
+
+    VertexBuffer vertexBuffer(vertices, sizeof(vertices));
 
     glGenVertexArrays(1, &VAO);
-    glGenBuffers(1, &VBO);
     glGenBuffers(1, &EBO);
 
     glBindVertexArray(VAO);
-
-    glBindBuffer(GL_ARRAY_BUFFER, VBO);
-    glBufferData(GL_ARRAY_BUFFER, sizeof(vertices), vertices, GL_STATIC_DRAW);
 
     glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, EBO);
     glBufferData(GL_ELEMENT_ARRAY_BUFFER, sizeof(indices), indices, GL_STATIC_DRAW);
@@ -73,8 +72,8 @@ int main()
     glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 3 * sizeof(float), 0);
     glEnableVertexAttribArray(0);
 
-    glBindBuffer(GL_ARRAY_BUFFER, 0);
     glBindVertexArray(0);
+    vertexBuffer.Unbind();
     glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, 0);
 
     // Game loop
@@ -95,9 +94,7 @@ int main()
     }
 
     glDeleteVertexArrays(1, &VAO);
-    glDeleteBuffers(1, &VBO);
     glDeleteBuffers(1, &EBO);
-    shader.Delete();
     glfwDestroyWindow(window);
     // Terminates GLFW, clearing any resources allocated by GLFW.
     glfwTerminate();

@@ -39,6 +39,10 @@ Shader::Shader(const std::string& filePath) {
     m_ID = CreateShader(source.VertexSource, source.FragmentSource);
 }
 
+Shader::~Shader() {
+    glDeleteProgram(m_ID);   
+}
+
 unsigned int Shader::CreateShader(const std::string& vertexShader, const std::string& fragmentShader) {
     GLuint program = glCreateProgram();
     GLuint vs = CompileShader(GL_VERTEX_SHADER, vertexShader);
@@ -69,8 +73,4 @@ unsigned int Shader::CompileShader(unsigned int type, const std::string& source)
 
 void Shader::Activate() {
     glUseProgram(m_ID);
-}
-
-void Shader::Delete() {
-    glDeleteProgram(m_ID);
 }

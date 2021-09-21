@@ -16,7 +16,7 @@ set(SHADERS_SOURCE_PATH ${CMAKE_CURRENT_SOURCE_DIR}/res/shaders)
 set(SHADERS_BUILD_PATH ${CMAKE_CURRENT_BINARY_DIR}/res/shaders)
 set(SHADER_FILES basic.glsl)
 
-add_executable(main src/main.cpp src/Shader.cpp)
+add_executable(main src/main.cpp src/Shader.cpp src/VertexBuffer.cpp)
 
 target_include_directories(main
     PRIVATE

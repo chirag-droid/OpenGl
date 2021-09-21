@@ -71,6 +71,10 @@ unsigned int Shader::CompileShader(unsigned int type, const std::string& source)
     return id;
 }
 
-void Shader::Activate() {
+void Shader::Bind() {
     glUseProgram(m_ID);
+}
+
+void Shader::Unbind() {
+    glUseProgram(0);
 }

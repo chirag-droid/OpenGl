@@ -8,22 +8,30 @@
 #include "VertexArray.h"
 
 // Window dimensions
-const unsigned int WIDTH = 800, HEIGHT = 600;
+const unsigned int WIDTH = 900, HEIGHT = 600;
 
 float vertices[] = {
-    -0.5f, -0.5f, 0.0f,
-     0.0f,  0.5f, 0.0f,
-     0.5f, -0.5f, 0.0f,
-     0.0f, -0.5f, 0.0f,
-     0.5f / 2, 0.0f, 0.0f,
-    -0.5f / 2, 0.0f, 0.0f
+// ---- Coordinates ----  ---- Colors ----
+    -0.5f, -0.5f, 0.0f,    0.8f, 0.3f,  0.02f,
+     0.0f,  0.5f, 0.0f,    0.8f, 0.3f,  0.02f,
+     0.5f, -0.5f, 0.0f,    1.0f, 0.6f,  0.32f,
+     0.0f, -0.5f, 0.0f,    0.9f, 0.45f, 0.17f,
+     0.5f / 2, 0.0f, 0.0f, 0.9f, 0.45f, 0.17f,
+    -0.5f / 2, 0.0f, 0.0f, 0.8f, 0.3f,  0.02f
 };
 
+
+// Indices for order of vertices
 unsigned int indices[] = {
     0, 3, 5,
     3, 2, 4,
     5, 4, 1
 };
+
+// Change the view port everytime window get resized
+void frameBufferSizeCallback(GLFWwindow* window, int width, int height) {
+    glViewport(0, 0, width, height);
+}
 
 int main()
 {
@@ -56,19 +64,26 @@ int main()
     glViewport(0, 0, WIDTH, HEIGHT);
 
     glfwSwapInterval(1);
+    glfwSetFramebufferSizeCallback(window, frameBufferSizeCallback);
 
     Shader shader("res/shaders/basic.glsl");
 
     VertexArray vertexArray;
     vertexArray.Bind();
 
-    VertexBuffer vertexBuffer(vertices, 6 * 3 * sizeof(float));
+    VertexBuffer vertexBuffer(vertices, 6 * 6 * sizeof(float));
     IndexBuffer indexBuffer(indices, 9);
 
+    // Create a layout for vertex buffer
+    // Here we push two element in the layout each of size 3
+    // One is for coordinates other one is for defining color
     VertexBufferLayout vertexLayout;
+    vertexLayout.Push(GL_FLOAT, 3);
     vertexLayout.Push(GL_FLOAT, 3);
     vertexArray.AddBuffer(vertexBuffer, vertexLayout);
 
+    // Unbind all, to prevent accidental modification   
+    shader.Unbind();
     vertexArray.Unbind();
     vertexBuffer.Unbind();
     indexBuffer.Unbind();
@@ -80,9 +95,12 @@ int main()
         glClearColor(0.07f, 0.13f, 0.17f, 1.0f);
         glClear(GL_COLOR_BUFFER_BIT);
 
-        // Activate the shader program
-        shader.Activate();
+        // Bind the shader program
+        shader.Bind();
+
+        // Bind the vertex Array and index Buffer again
         vertexArray.Bind();
+        indexBuffer.Bind();
         glDrawElements(GL_TRIANGLES, 9, GL_UNSIGNED_INT, 0);
 
         // Listen for key press, mouse events etc. and swap the buffer
@@ -90,8 +108,8 @@ int main()
         glfwSwapBuffers(window);
     }
 
-    glfwDestroyWindow(window);
     // Terminates GLFW, clearing any resources allocated by GLFW.
+    glfwDestroyWindow(window);
     glfwTerminate();
     return 0;
 }

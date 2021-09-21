@@ -15,8 +15,10 @@ private:
     unsigned int m_ID;
 public:
     Shader(const std::string& filePath);
-    void Activate();
     ~Shader();
+
+    void Bind();
+    void Unbind();
 private:
     unsigned int CreateShader(const std::string& vertexShader, const std::string& fragmentShader);
     unsigned int CompileShader(unsigned int type, const std::string& source);

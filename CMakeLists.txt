@@ -11,13 +11,32 @@ project(OpenGl)
 add_subdirectory(vendor/glad)
 add_subdirectory(vendor/glfw)
 
+set(CMAKE_CXX_STANDARD 20)
+set(CMAKE_CXX_STANDARD_REQUIRED ON)
+set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -std=c++20")
+
 # Set Shader files and their paths
 set(SHADERS_SOURCE_PATH ${CMAKE_CURRENT_SOURCE_DIR}/res/shaders)
 set(SHADERS_BUILD_PATH ${CMAKE_CURRENT_BINARY_DIR}/res/shaders)
 set(SHADER_FILES basic.glsl)
 
-add_executable(main src/main.cpp src/Shader.cpp src/VertexBuffer.cpp src/IndexBuffer.cpp)
+# Set source files and header files
+set(SOURCE_FILES
+    src/main.cpp
+    src/Shader.cpp
+    src/VertexBuffer.cpp
+    src/IndexBuffer.cpp
+    src/VertexArray.cpp
+    src/Shader.h
+    src/VertexBuffer.h
+    src/IndexBuffer.h
+    src/VertexArray.h
+    src/VertexBufferLayout.h
+)
 
+add_executable(main ${SOURCE_FILES})
+
+# Set src/ directory as a include directory for main
 target_include_directories(main
     PRIVATE
     ${CMAKE_CURRENT_SOURCE_DIR}/src

@@ -5,9 +5,25 @@
 #include "Shader.h"
 #include "VertexBuffer.h"
 #include "IndexBuffer.h"
+#include "VertexArray.h"
 
 // Window dimensions
 const unsigned int WIDTH = 800, HEIGHT = 600;
+
+float vertices[] = {
+    -0.5f, -0.5f, 0.0f,
+     0.0f,  0.5f, 0.0f,
+     0.5f, -0.5f, 0.0f,
+     0.0f, -0.5f, 0.0f,
+     0.5f / 2, 0.0f, 0.0f,
+    -0.5f / 2, 0.0f, 0.0f
+};
+
+unsigned int indices[] = {
+    0, 3, 5,
+    3, 2, 4,
+    5, 4, 1
+};
 
 int main()
 {
@@ -43,33 +59,17 @@ int main()
 
     Shader shader("res/shaders/basic.glsl");
 
-    float vertices[] = {
-        -0.5f, -0.5f, 0.0f,
-         0.0f,  0.5f, 0.0f,
-         0.5f, -0.5f, 0.0f,
-         0.0f, -0.5f, 0.0f,
-         0.5f / 2, 0.0f, 0.0f,
-        -0.5f / 2, 0.0f, 0.0f
-    };
+    VertexArray vertexArray;
+    vertexArray.Bind();
 
-    unsigned int indices[] = {
-        0, 3, 5,
-        3, 2, 4,
-        5, 4, 1
-    };
-
-    unsigned int VAO;
-
-    glGenVertexArrays(1, &VAO);
-    glBindVertexArray(VAO);
-
-    VertexBuffer vertexBuffer(vertices, sizeof(vertices));
+    VertexBuffer vertexBuffer(vertices, 6 * 3 * sizeof(float));
     IndexBuffer indexBuffer(indices, 9);
 
-    glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 3 * sizeof(float), 0);
-    glEnableVertexAttribArray(0);
+    VertexBufferLayout vertexLayout;
+    vertexLayout.Push(GL_FLOAT, 3);
+    vertexArray.AddBuffer(vertexBuffer, vertexLayout);
 
-    glBindVertexArray(0);
+    vertexArray.Unbind();
     vertexBuffer.Unbind();
     indexBuffer.Unbind();
 
@@ -82,7 +82,7 @@ int main()
 
         // Activate the shader program
         shader.Activate();
-        glBindVertexArray(VAO);
+        vertexArray.Bind();
         glDrawElements(GL_TRIANGLES, 9, GL_UNSIGNED_INT, 0);
 
         // Listen for key press, mouse events etc. and swap the buffer
@@ -90,7 +90,6 @@ int main()
         glfwSwapBuffers(window);
     }
 
-    glDeleteVertexArrays(1, &VAO);
     glfwDestroyWindow(window);
     // Terminates GLFW, clearing any resources allocated by GLFW.
     glfwTerminate();

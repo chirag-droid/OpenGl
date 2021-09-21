@@ -24,10 +24,11 @@ jobs:
       with:
         submodules: true
 
-    - name: Cache multiple paths
+    - name: Cache cmake files
+      id: cache-cmake
       uses: actions/cache@v2
       with:
-        path: build/
+        path: ${{github.workspace}}/build
         key: ${{ runner.os }}-build
 
     - name: Setup x11 development environment for linux
@@ -35,6 +36,7 @@ jobs:
       run: sudo apt-get install -y xorg-dev
 
     - name: Configure CMake
+      if: steps.cache-cmake.outputs.cache-hit != 'true'
       run: cmake -B ${{github.workspace}}/build -DCMAKE_BUILD_TYPE=${{env.BUILD_TYPE}}
 
     - name: Build

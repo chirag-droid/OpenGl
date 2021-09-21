@@ -28,8 +28,8 @@ jobs:
       id: cache-cmake
       uses: actions/cache@v2
       with:
-        path: ${{github.workspace}}/build
-        key: ${{ runner.os }}-build
+        path: ~/build
+        key: ${{ runner.os }}-cmake
 
     - name: Setup x11 development environment for linux
       if: runner.os == 'Linux'

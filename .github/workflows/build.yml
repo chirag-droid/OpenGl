@@ -16,13 +16,19 @@ jobs:
     name: ${{ matrix.os }}
     strategy:
       matrix:
-        os: [linux-latest, windows-latest, macos-latest]
+        os: [ubuntu-latest, windows-latest, macos-latest]
 
     steps:
     - name: Checkout
       uses: actions/checkout@v2
       with:
         submodules: true
+
+    - name: Cache multiple paths
+      uses: actions/cache@v2
+      with:
+        path: build/
+        key: ${{ runner.os }}-build
 
     - name: Setup x11 development environment for linux
       if: runner.os == 'Linux'

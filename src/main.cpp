@@ -1,75 +1,11 @@
 #include <iostream>
-#include <string>
-#include <fstream>
-#include <sstream>
 
 #include <glad/glad.h>
 #include <GLFW/glfw3.h>
+#include "Shader.h"
 
 // Window dimensions
-const GLuint WIDTH = 800, HEIGHT = 600;
-
-struct ShaderProgramSources {
-    std::string VertexSource;
-    std::string FragmentSource;
-};
-
-static ShaderProgramSources ParseShader(const std::string& filepath) {
-    std::ifstream stream(filepath);
-
-    enum ShaderType {
-        NONE = -1, VERTEX, FRAGMENT
-    };
-
-    std::string line;
-    std::stringstream ss[2];
-    ShaderType type = ShaderType::NONE;
-
-    // If the file is not open {"", ""} is returned
-    if (!stream.is_open()) return {"", ""};
-
-    // Iterates over each line in the file
-    while(stream.good()) {
-        std::getline(stream, line);
-
-        if (line.find("#shader vertex") != std::string::npos)
-            type = ShaderType::VERTEX;
-        else if (line.find("#shader fragment") != std::string::npos)
-            type = ShaderType::FRAGMENT;
-        else
-            ss[(int)type] << line << "\n";
-    }
-
-    return { ss[0].str(), ss[1].str() };
-}
-
-static GLuint CompileShader(GLenum type, const std::string& source) {
-    GLuint id = glCreateShader(type);
-    const char* src = source.c_str();
-    glShaderSource(id, 1, &src, NULL);
-    glCompileShader(id);
-
-    // TODO: Error handling
-
-    return id;
-}
-
-static GLuint CreateShader(const std::string& vertexShader, std::string& fragmentShader) {
-    GLuint program = glCreateProgram();
-    GLuint vs = CompileShader(GL_VERTEX_SHADER, vertexShader);
-    GLuint fs = CompileShader(GL_FRAGMENT_SHADER, fragmentShader);
-
-    glAttachShader(program, vs);
-    glAttachShader(program, fs);
-    glLinkProgram(program);
-    glValidateProgram(program);
-
-    // Delete shaders because we have attached it with program
-    glDeleteShader(vs);
-    glDeleteShader(fs);
-
-    return program;
-}
+const unsigned int WIDTH = 800, HEIGHT = 600;
 
 int main()
 {
@@ -103,10 +39,9 @@ int main()
 
     glfwSwapInterval(1);
 
-    ShaderProgramSources source = ParseShader("res/shaders/basic.glsl");
-    GLuint shaderProgram = CreateShader(source.VertexSource, source.FragmentSource);
+    Shader shader("res/shaders/basic.glsl");
 
-    GLfloat vertices[] = {
+    float vertices[] = {
         -0.5f, -0.5f, 0.0f,
          0.0f,  0.5f, 0.0f,
          0.5f, -0.5f, 0.0f,
@@ -115,13 +50,13 @@ int main()
         -0.5f / 2, 0.0f, 0.0f
     };
 
-    GLuint indices[] = {
+    unsigned int indices[] = {
         0, 3, 5,
         3, 2, 4,
         5, 4, 1
     };
 
-    GLuint VAO, VBO, EBO;
+    unsigned int VAO, VBO, EBO;
 
     glGenVertexArrays(1, &VAO);
     glGenBuffers(1, &VBO);
@@ -145,25 +80,24 @@ int main()
     // Game loop
     while (!glfwWindowShouldClose(window))
     {
-        // Check if any events have been activated (key pressed, mouse moved etc.) and call corresponding response functions
-        glfwPollEvents();
-
-        // Render
         // Clear the colorbuffer
         glClearColor(0.07f, 0.13f, 0.17f, 1.0f);
         glClear(GL_COLOR_BUFFER_BIT);
-        glUseProgram(shaderProgram);
+
+        // Activate the shader program
+        shader.Activate();
         glBindVertexArray(VAO);
         glDrawElements(GL_TRIANGLES, 9, GL_UNSIGNED_INT, 0);
 
-        // Swap the screen buffers
+        // Listen for key press, mouse events etc. and swap the buffer
+        glfwPollEvents();
         glfwSwapBuffers(window);
     }
 
     glDeleteVertexArrays(1, &VAO);
     glDeleteBuffers(1, &VBO);
     glDeleteBuffers(1, &EBO);
-    glDeleteProgram(shaderProgram);
+    shader.Delete();
     glfwDestroyWindow(window);
     // Terminates GLFW, clearing any resources allocated by GLFW.
     glfwTerminate();

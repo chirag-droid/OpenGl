@@ -32,7 +32,7 @@ jobs:
           sudo apt-get install -y ccache
         elif [ "$RUNNER_OS" == "Windows" ]; then
           choco install ccache
-        elif [ "$RUNNER_OS" == "macOs" ]; then
+        elif [ "$RUNNER_OS" == "macOS" ]; then
           sudo brew install ccache
         else
           echo "$RUNNER_OS not supported"
@@ -45,6 +45,7 @@ jobs:
       run: |
         string(TIMESTAMP current_date "%Y-%m-%d-%H;%M;%S" UTC)
         message("::set-output name=timestamp::${current_date}")
+      shell: cmake -P {0}
       
     - name: Cache ccache files
       uses: actions/cache@v2.1.6

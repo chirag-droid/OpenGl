@@ -52,7 +52,7 @@ jobs:
         path: .ccache
         key: ${{ matrix.type }}-${{ matrix.os }}-ccache-${{ steps.ccache_cache_timestamp.outputs.timestamp }}
         restore-keys: |
-          ${{ matrix-type }}-${{ matrix.os }}-ccache-
+          ${{ matrix.type }}-${{ matrix.os }}-ccache-
 
     - name: Build with cmake
       uses: lukka/run-cmake@v3

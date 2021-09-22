@@ -50,7 +50,7 @@ jobs:
       uses: actions/cache@v2.1.6
       with:
         path: .ccache
-        key: ${{ matrix-type }}-${{ matrix.os }}-ccache-${{ steps.ccache_cache_timestamp.outputs.timestamp }}
+        key: ${{ matrix.type }}-${{ matrix.os }}-ccache-${{ steps.ccache_cache_timestamp.outputs.timestamp }}
         restore-keys: |
           ${{ matrix-type }}-${{ matrix.os }}-ccache-
 

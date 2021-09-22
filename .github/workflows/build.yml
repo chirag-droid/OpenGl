@@ -18,23 +18,16 @@ jobs:
       matrix:
         type: ['Release', 'Debug']
         os: ['ubuntu-latest', 'windows-latest', 'macos-latest']
-        include:
-          - os: 'windows-latest'
-            cc: 'gcc'
-            cxx: 'g++'
-
-          - os: 'ubuntu-latest'
-            cc: 'gcc'
-            cxx: 'g++'
-
-          - os: 'macos-latest'
-            cc: 'clang'
-            cxx: 'clang++'
 
     steps:
     - name: Setup x11 development environment for linux
       if: runner.os == 'Linux'
       run: sudo apt-get install -y xorg-dev
+    
+    - name: Setup mingw64 for windows
+      if: runner.os == 'Windows'
+      run: |
+        echo "C:\msys64\mingw64\bin" >> $GITHUB_PATH
 
     - name: Checkout from git
       uses: actions/checkout@v2
@@ -78,9 +71,6 @@ jobs:
         cmakeAppendedArgs: '-DCMAKE_BUILD_TYPE=${{ matrix.type }} -D CMAKE_C_COMPILER_LAUNCHER=ccache -D CMAKE_CXX_COMPILER_LAUNCHER=ccache'
         buildWithCMake: true
         buildDirectory: '${{ github.workspace }}/build'
-      env:
-        CC: ${{ matrix.cc }}
-        CXX: ${{ matrix.cxx }}
       
     - name: Show ccache statistics
       run: ccache -s

@@ -18,6 +18,18 @@ jobs:
       matrix:
         type: ['Release', 'Debug']
         os: ['ubuntu-latest', 'windows-latest', 'macos-latest']
+        include:
+          - os: 'windows-latest'
+            cc: 'gcc'
+            cxx: 'g++'
+
+          - os: 'ubuntu-latest'
+            cc: 'gcc'
+            cxx: 'g++'
+
+          - os: 'macos-latest'
+            cc: 'clang'
+            cxx: 'clang++'
 
     steps:
     - name: Setup x11 development environment for linux
@@ -68,7 +80,7 @@ jobs:
       with:
         cmakeListsOrSettingsJson: CMakeListsTxtAdvanced
         cmakeListsTxtPath: '${{ github.workspace }}/CMakeLists.txt'
-        cmakeAppendedArgs: '-DCMAKE_BUILD_TYPE=${{ matrix.type }} -D CMAKE_C_COMPILER_LAUNCHER=ccache -D CMAKE_CXX_COMPILER_LAUNCHER=ccache'
+        cmakeAppendedArgs: '-DCMAKE_BUILD_TYPE=${{ matrix.type }} -D CMAKE_C_COMPILER_LAUNCHER=ccache -D CMAKE_CXX_COMPILER_LAUNCHER=ccache -D CMAKE_C_COMPILER={{ matrix.cc }} -D CMAKE_CXX_COMPILER={{ matrix.cpp }}'
         buildWithCMake: true
         buildDirectory: '${{ github.workspace }}/build'
       

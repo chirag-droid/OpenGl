@@ -17,75 +17,31 @@ jobs:
       fail-fast: false
       matrix:
         type: ['Release', 'Debug']
-        os: ['ubuntu-latest', 'windows-latest', 'macos-latest']
-        include:
-          - os: 'windows-latest'
-            cc: 'gcc'
-            cxx: 'g++'
-
-          - os: 'ubuntu-latest'
-            cc: 'gcc'
-            cxx: 'g++'
-
-          - os: 'macos-latest'
-            cc: 'clang'
-            cxx: 'clang++'
+        os: ['ubuntu-latest', 'macos-latest']
 
     steps:
     - name: Setup x11 development environment for linux
       if: runner.os == 'Linux'
       run: sudo apt-get install -y xorg-dev
-    
-    - name: Setup mingw64 for windows
-      if: runner.os == 'Windows'
-      run: |
-        echo "C:\msys64\mingw64\bin" >> $GITHUB_PATH
 
     - name: Checkout from git
       uses: actions/checkout@v2
       with:
         submodules: true
-
-    - name: Download ccache
-      run: |
-        if [ "$RUNNER_OS" == "Linux" ]; then
-          sudo apt-get install -y ccache
-        elif [ "$RUNNER_OS" == "Windows" ]; then
-          choco install ccache
-        elif [ "$RUNNER_OS" == "macOS" ]; then
-          brew install ccache
-        else
-          echo "$RUNNER_OS not supported"
-          exit 1
-        fi
-      shell: bash
-    
-    - name: Prepare ccache timestamp
-      id: ccache_cache_timestamp
-      run: |
-        string(TIMESTAMP current_date "%Y-%m-%d-%H;%M;%S" UTC)
-        message("::set-output name=timestamp::${current_date}")
-      shell: cmake -P {0}
       
-    - name: Cache ccache files
-      uses: actions/cache@v2.1.6
+    - name: Setup ccache
+      uses: hendrikmuhs/ccache-action@v1
       with:
-        path: .ccache
-        key: ${{ matrix.type }}-${{ matrix.os }}-ccache-${{ steps.ccache_cache_timestamp.outputs.timestamp }}
-        restore-keys: |
-          ${{ matrix.type }}-${{ matrix.os }}-ccache-
-    
+        key: ${{ matrix.type }}-${{ matrix.os }}-ccache
+
     - name: Build with cmake
       uses: lukka/run-cmake@v3
       with:
         cmakeListsOrSettingsJson: CMakeListsTxtAdvanced
         cmakeListsTxtPath: '${{ github.workspace }}/CMakeLists.txt'
-        cmakeAppendedArgs: '-DCMAKE_BUILD_TYPE=${{ matrix.type }} -D CMAKE_C_COMPILER_LAUNCHER=ccache -D CMAKE_CXX_COMPILER_LAUNCHER=ccache -D CMAKE_C_COMPILER=${{ matrix.cc }} -D CMAKE_CXX_COMPILER=${{ matrix.cxx }}'
+        cmakeAppendedArgs: '-DCMAKE_BUILD_TYPE=${{ matrix.type }} -D CMAKE_C_COMPILER_LAUNCHER=ccache -D CMAKE_CXX_COMPILER_LAUNCHER=ccache'
         buildWithCMake: true
         buildDirectory: '${{ github.workspace }}/build'
-      
-    - name: Show ccache statistics
-      run: ccache -s
     
     - name: Upload Artifacts
       uses: actions/upload-artifact@v2

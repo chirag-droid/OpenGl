@@ -65,6 +65,9 @@ jobs:
         set(ENV{CCACHE_MAXSIZE} "400M")
       shell: cmake -P {0}
 
+    - name: Show ccache statistics
+      run: ccache -s
+    
     - name: Build with cmake
       uses: lukka/run-cmake@v3
       with:

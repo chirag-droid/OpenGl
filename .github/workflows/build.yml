@@ -69,9 +69,6 @@ jobs:
         key: ${{ matrix.type }}-${{ matrix.os }}-ccache-${{ steps.ccache_cache_timestamp.outputs.timestamp }}
         restore-keys: |
           ${{ matrix.type }}-${{ matrix.os }}-ccache-
-      env:
-        CC: ${{ matrix.cc }}
-        CXX: ${{ matrix.cxx }}
     
     - name: Build with cmake
       uses: lukka/run-cmake@v3
@@ -81,6 +78,9 @@ jobs:
         cmakeAppendedArgs: '-DCMAKE_BUILD_TYPE=${{ matrix.type }} -D CMAKE_C_COMPILER_LAUNCHER=ccache -D CMAKE_CXX_COMPILER_LAUNCHER=ccache'
         buildWithCMake: true
         buildDirectory: '${{ github.workspace }}/build'
+      env:
+        CC: ${{ matrix.cc }}
+        CXX: ${{ matrix.cxx }}
       
     - name: Show ccache statistics
       run: ccache -s

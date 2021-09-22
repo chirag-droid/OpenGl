@@ -33,7 +33,7 @@ jobs:
         elif [ "$RUNNER_OS" == "Windows" ]; then
           choco install ccache
         elif [ "$RUNNER_OS" == "macOS" ]; then
-          sudo brew install ccache
+          brew install ccache
         else
           echo "$RUNNER_OS not supported"
           exit 1

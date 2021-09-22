@@ -69,3 +69,9 @@ jobs:
       
     - name: Show ccache statistics
       run: ccache -s
+    
+    - name: Upload Artifacts
+      uses: actions/upload-artifact@v2
+      with:
+        name: ${{ matrix.os }}-${{ matrix.type }}
+        path: ${{ github.workspace }}/build

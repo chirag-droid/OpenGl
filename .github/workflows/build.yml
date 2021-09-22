@@ -18,6 +18,18 @@ jobs:
       matrix:
         type: ['Release', 'Debug']
         os: ['ubuntu-latest', 'windows-latest', 'macos-latest']
+        include:
+          - os: 'windows-latest'
+            cc: 'gcc'
+            cxx: 'g++'
+
+          - os: 'ubuntu-latest'
+            cc: 'gcc'
+            cxx: 'g++'
+
+          - os: 'macos-latest'
+            cc: 'clang'
+            cxx: 'clang++'
 
     steps:
     - name: Setup x11 development environment for linux
@@ -57,6 +69,9 @@ jobs:
         key: ${{ matrix.type }}-${{ matrix.os }}-ccache-${{ steps.ccache_cache_timestamp.outputs.timestamp }}
         restore-keys: |
           ${{ matrix.type }}-${{ matrix.os }}-ccache-
+      env:
+        CC: ${{ matrix.cc }}
+        CXX: ${{ matrix.cxx }}
     
     - name: Build with cmake
       uses: lukka/run-cmake@v3

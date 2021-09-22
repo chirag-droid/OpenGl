@@ -26,7 +26,7 @@ jobs:
       with:
         submodules: true
 
-    - name: Setup ccache
+    - name: Download ccache
       run: |
         if [ "$RUNNER_OS" == "Linux" ]; then
           sudo apt-get install -y ccache
@@ -54,6 +54,16 @@ jobs:
         key: ${{ matrix.type }}-${{ matrix.os }}-ccache-${{ steps.ccache_cache_timestamp.outputs.timestamp }}
         restore-keys: |
           ${{ matrix.type }}-${{ matrix.os }}-ccache-
+    
+    - name: Configure ccache
+      run: |
+        file(TO_CMAKE_PATH "$ENV{GITHUB_WORKSPACE}" ccache_basedir)
+        set(ENV{CCACHE_BASEDIR} "${ccache_basedir}")
+        set(ENV{CCACHE_DIR} "${ccache_basedir}/.ccache")
+        set(ENV{CCACHE_COMPRESS} "true")
+        set(ENV{CCACHE_COMPRESSLEVEL} "6")
+        set(ENV{CCACHE_MAXSIZE} "400M")
+      shell: cmake -P {0}
 
     - name: Build with cmake
       uses: lukka/run-cmake@v3

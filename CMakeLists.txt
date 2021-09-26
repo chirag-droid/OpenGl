@@ -7,66 +7,44 @@ endif()
 
 project(OpenGl)
 
-# Add external dependencies
-add_subdirectory(vendor/glad)
-add_subdirectory(vendor/glfw)
-
+# C++ standard 17
 set(CMAKE_CXX_STANDARD 17)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
-set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -std=c++17")
 
-# Set Shader files and their paths
-set(SHADERS_SOURCE_PATH ${CMAKE_CURRENT_SOURCE_DIR}/res/shaders)
-set(SHADERS_BUILD_PATH ${CMAKE_CURRENT_BINARY_DIR}/res/shaders)
-set(SHADER_FILES basic.glsl)
+# Add glad and glfw subdirectory
+add_subdirectory(vendor/glfw)
+add_subdirectory(vendor/glad)
 
 # Set source files and header files
-set(SOURCE_FILES
-    src/main.cpp
-    src/Shader.cpp
-    src/VertexBuffer.cpp
-    src/IndexBuffer.cpp
-    src/VertexArray.cpp
-    src/Shader.h
-    src/VertexBuffer.h
-    src/IndexBuffer.h
-    src/VertexArray.h
-    src/VertexBufferLayout.h
-)
-
+file(GLOB_RECURSE SOURCE_FILES CONFIGURE_DEPENDS src/*.h src/*cpp)
 add_executable(main ${SOURCE_FILES})
-
-# Set src/ directory as a include directory for main
-target_include_directories(main
-    PRIVATE
-    ${CMAKE_CURRENT_SOURCE_DIR}/src
+set_property(
+    TARGET
+        main
+    PROPERTY
+        RUNTIME_OUTPUT_DIRECTORY "${CMAKE_CURRENT_BINARY_DIR}"
 )
 
-# Iterate over all the shader files
-foreach(item IN LISTS SHADER_FILES)
-    # Add command to build the shader files i.e.
-    # to copy the shader file from source dir to build dir
-    add_custom_command(
-        OUTPUT ${SHADERS_BUILD_PATH}/${item}
-        COMMAND ${CMAKE_COMMAND} -E copy
-            ${SHADERS_SOURCE_PATH}/${item}
-            ${SHADERS_BUILD_PATH}/${item}
-        DEPENDS ${SHADERS_SOURCE_PATH}/${item}
-        COMMENT "Copying ${SHADERS_SOURCE_PATH}/${item} to ${SHADERS_BUILD_PATH}/${item}"
-    )
+# Include src/ dir and vendor headers
+target_include_directories(main
+    PUBLIC
+        ${CMAKE_CURRENT_SOURCE_DIR}/src
+)
 
-    # Add shader file as a dependency to main target
-    target_sources(main
-        PUBLIC ${SHADERS_BUILD_PATH}/${item}
-    )
-endforeach()
-
-# Set glad and glfw libraries as depencies to main
+# Link libs from vendor subdirectory
 target_link_libraries(main
     PUBLIC
-    glad
-    glfw
-
-    PRIVATE
-    ${CMAKE_DL_LIBS}
+        glfw
+        glad
 )
+
+# Set resource shader and texture files
+set(RES_FILES
+    shaders/basic.glsl
+)
+
+# iterate over resource files
+foreach(item IN LISTS RES_FILES)
+    # copy from source resource file to build resource file
+    configure_file(res/${item} res/${item} COPYONLY)
+endforeach()

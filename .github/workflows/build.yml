@@ -20,6 +20,11 @@ jobs:
         os: ['ubuntu-latest', 'macos-latest']
 
     steps:
+    - name: Setup MinGw
+      uses: egor-tensin/setup-mingw@v2
+      with:
+        platform: x64
+
     - name: Setup x11 development environment for linux
       if: runner.os == 'Linux'
       run: sudo apt-get install -y xorg-dev

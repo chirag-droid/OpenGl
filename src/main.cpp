@@ -2,6 +2,7 @@
 
 #include <glad/glad.h>
 #include <GLFW/glfw3.h>
+
 #include "Shader.h"
 #include "VertexBuffer.h"
 #include "IndexBuffer.h"
@@ -35,7 +36,6 @@ void frameBufferSizeCallback(GLFWwindow* window, int width, int height) {
 
 int main()
 {
-    std::cout << "Starting GLFW context." << std::endl;
     // Init GLFW
     glfwInit();
 
@@ -57,7 +57,7 @@ int main()
         return -1;
     }
 
-    // Get Opengl version 
+    // Get Opengl version
     std::cout << "OpenGl version - " << glGetString(GL_VERSION) << std::endl;
 
     // Define the viewport dimensions
@@ -85,22 +85,28 @@ int main()
     // Unbind all, to prevent accidental modification   
     shader.Unbind();
     vertexArray.Unbind();
+
+    // Unbind vertex array before unbinding buffer object
+    // If we unbind it before the vertex array,
+    // vertex array wont keep track of these buffers
     vertexBuffer.Unbind();
     indexBuffer.Unbind();
 
     // Game loop
     while (!glfwWindowShouldClose(window))
     {
+        // Wireframe mode
+        // glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
+
         // Clear the colorbuffer
         glClearColor(0.07f, 0.13f, 0.17f, 1.0f);
         glClear(GL_COLOR_BUFFER_BIT);
 
-        // Bind the shader program
+        // Bind the shader program and vertex array
         shader.Bind();
-
-        // Bind the vertex Array and index Buffer again
         vertexArray.Bind();
-        indexBuffer.Bind();
+
+        // Draw 9 elements (we have 9 indices)
         glDrawElements(GL_TRIANGLES, 9, GL_UNSIGNED_INT, 0);
 
         // Listen for key press, mouse events etc. and swap the buffer

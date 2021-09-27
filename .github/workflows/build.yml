@@ -36,7 +36,7 @@ jobs:
         submodules: true
       
     - name: Setup ccache
-      uses: hendrikmuhs/ccache-action@v1
+      uses: chirag-droid/setup-ccache@v0.0.1
       with:
         key: ${{ matrix.type }}-${{ matrix.os }}-ccache
 

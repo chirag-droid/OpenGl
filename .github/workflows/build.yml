@@ -6,9 +6,6 @@ on:
   pull_request:
     branches: [ main ]
 
-env:
-  CCACHE_DIR: '${{ github.workspace }}/.ccache'
-
 jobs:
   build:
     runs-on: ${{ matrix.os }}
@@ -36,7 +33,7 @@ jobs:
         submodules: true
       
     - name: Setup ccache
-      uses: chirag-droid/setup-ccache@v0.0.1
+      uses: chirag-droid/setup-ccache@latest
       with:
         key: ${{ matrix.type }}-${{ matrix.os }}-ccache
 

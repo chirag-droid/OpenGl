@@ -30,7 +30,7 @@ jobs:
         submodules: true
       
     - name: Setup ccache
-      uses: chirag-droid/setup-ccache@v0.0.2
+      uses: chirag-droid/setup-ccache@v0.1.0
       with:
         key: ${{ matrix.type }}-${{ matrix.os }}-ccache
         path: ${{ matrix.path }}

@@ -32,7 +32,7 @@ jobs:
     - name: Setup ccache
       uses: chirag-droid/setup-ccache@v0.1.0
       with:
-        key: ${{ matrix.type }}-${{ matrix.os }}-ccache
+        key: ccache-${{ matrix.type }}-${{ matrix.os }}
         path: ${{ matrix.path }}
 
     - name: Build with cmake

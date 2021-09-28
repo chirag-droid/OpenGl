@@ -15,14 +15,11 @@ jobs:
       matrix:
         type: ['Release', 'Debug']
         os: ['ubuntu-latest', 'macos-latest', 'windows-latest']
+        include:
+          - os: windows-latest
+            path: "C:/msys64/mingw64/bin/"
 
     steps:
-    - name: Setup MinGw
-      if: runner.os == 'Windows'
-      uses: egor-tensin/setup-mingw@v2
-      with:
-        platform: x64
-
     - name: Setup x11 development environment for linux
       if: runner.os == 'Linux'
       run: sudo apt-get install -y xorg-dev
@@ -36,6 +33,7 @@ jobs:
       uses: chirag-droid/setup-ccache@v0.0.2
       with:
         key: ${{ matrix.type }}-${{ matrix.os }}-ccache
+        path: ${{ matrix.path }}
 
     - name: Build with cmake
       uses: lukka/run-cmake@v3
